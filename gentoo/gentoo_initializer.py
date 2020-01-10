@@ -20,7 +20,7 @@ def main():
     sock = _Util.connect()
     try:
         dataDir = sys.argv[1]
-        logDir = sys.argv[3]
+        logDir = sys.argv[2]
         rsyncSource = "rsync://mirrors.tuna.tsinghua.edu.cn/gentoo"
         fileSource = "https://mirrors.tuna.tsinghua.edu.cn/gentoo"
 
@@ -103,7 +103,7 @@ class _Util:
             "data": {
                 "progress": progress,
             },
-        }).encoding("utf-8"))
+        }).encode("utf-8"))
 
     @staticmethod
     def error_occured(sock, exc_info):
@@ -112,7 +112,7 @@ class _Util:
             "data": {
                 "exc_info": "abc",
             },
-        }).encoding("utf-8"))
+        }).encode("utf-8"))
 
     @staticmethod
     def randomSorted(tlist):

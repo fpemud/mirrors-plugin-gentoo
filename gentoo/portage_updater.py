@@ -11,7 +11,7 @@ import subprocess
 
 def main():
     dataDir = sys.argv[1]
-    logDir = sys.argv[3]
+    logDir = sys.argv[2]
     rsyncSource = "rsync://mirrors.tuna.tsinghua.edu.cn/gentoo-portage"
     logFile = os.path.join(logDir, "rsync.log")
     _Util.shellCall("/usr/bin/rsync -a -z --no-motd --delete %s %s >%s 2>&1" % (rsyncSource, dataDir, logFile))
