@@ -18,7 +18,7 @@ def testGentoo(filename):
         try:
             urllib.request.urlopen(url, timeout=60, cafile=certifi.where())
             print("Ok.")
-        except:
+        except Exception:
             print("Failed.")
     print("")
 
@@ -31,7 +31,7 @@ def testGentooPortage(filename):
         try:
             shellCall("/usr/bin/rsync -a --no-motd --list-only %s" % (url))
             print("Ok.")
-        except:
+        except Exception:
             print("Failed.")
     print("")
 

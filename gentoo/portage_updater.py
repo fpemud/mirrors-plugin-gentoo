@@ -1,20 +1,16 @@
 #!/usr/bin/python3
 # -*- coding: utf-8; tab-width: 4; indent-tabs-mode: t -*-
 
-import os
-import re
 import sys
 import time
-import random
+import json
 import subprocess
 
 
 def main():
-    dataDir = sys.argv[1]
-    logDir = sys.argv[3]
+    dataDir = json.loads(sys.argv[1])["data-directory"]
     rsyncSource = "rsync://mirrors.tuna.tsinghua.edu.cn/gentoo-portage"
-    logFile = os.path.join(logDir, "rsync.log")
-    _Util.shellCall("/usr/bin/rsync -a -z --no-motd --delete %s %s >%s 2>&1" % (rsyncSource, dataDir, logFile))
+    _Util.shellCall("/usr/bin/rsync -a -z --no-motd --delete %s %s" % (rsyncSource, dataDir))
 
 
 class _Util:

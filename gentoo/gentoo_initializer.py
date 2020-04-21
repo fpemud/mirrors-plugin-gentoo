@@ -17,10 +17,10 @@ PROGRESS_STAGE_3 = 20
 
 
 def main():
+    args = json.loads(sys.argv[1])
     sock = _Util.connect()
     try:
-        dataDir = sys.argv[1]
-        logDir = sys.argv[3]
+        dataDir = args["data-directory"]
         rsyncSource = "rsync://mirrors.tuna.tsinghua.edu.cn/gentoo"
         fileSource = "https://mirrors.tuna.tsinghua.edu.cn/gentoo"
 
@@ -31,7 +31,6 @@ def main():
         _Util.progress_changed(sock, PROGRESS_STAGE_1)
 
         # stage2: download file list
-        logFile = os.path.join(logDir, "wget.log")
         i = 1
         total = len(fileList)
         for fn in _Util.randomSorted(fileList):
@@ -40,7 +39,7 @@ def main():
                 print("Download file \"%s\"." % (fn))
                 tmpfn = fullfn + ".tmp"
                 url = os.path.join(fileSource, fn)
-                rc, out = _Util.shellCallWithRetCode("/usr/bin/wget -O \"%s\" %s >%s 2>&1" % (tmpfn, url, logFile))
+                rc, out = _Util.shellCallWithRetCode("/usr/bin/wget -O \"%s\" %s" % (tmpfn, url))
                 if rc != 0 and rc != 8:
                     # ignore "file not found" error (8) since rsyncSource/fileSource may be different servers
                     raise Exception("download %s failed" % (url))
@@ -52,13 +51,12 @@ def main():
 
         # stage3: rsync
         print("Start rsync.")
-        logFile = os.path.join(logDir, "rsync.log")
-        _Util.shellCall("/usr/bin/rsync -a -z --no-motd --delete %s %s >%s 2>&1" % (rsyncSource, dataDir, logFile))
+        _Util.shellCall("/usr/bin/rsync -a -z --no-motd --delete %s %s" % (rsyncSource, dataDir))
         print("Rsync over.")
 
         # report full progress
         _Util.progress_changed(sock, 100)
-    except:
+    except Exception:
         _Util.error_occured(sock, sys.exc_info())
         raise
     finally:
