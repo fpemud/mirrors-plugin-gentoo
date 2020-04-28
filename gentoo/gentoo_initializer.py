@@ -53,9 +53,6 @@ def main():
 
         # report full progress
         MUtil.progress_changed(sock, 100)
-    except Exception:
-        MUtil.error_occured(sock, sys.exc_info())
-        raise
     finally:
         sock.close()
 
@@ -97,16 +94,6 @@ class MUtil:
             "message": "progress",
             "data": {
                 "progress": progress,
-            },
-        }).encode("utf-8"))
-        sock.send(b'\n')
-
-    @staticmethod
-    def error_occured(sock, exc_info):
-        sock.send(json.dumps({
-            "message": "error_occured",
-            "data": {
-                "exc_info": "abc",
             },
         }).encode("utf-8"))
         sock.send(b'\n')
