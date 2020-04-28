@@ -17,7 +17,7 @@ PROGRESS_STAGE_3 = 20
 
 
 def main():
-    sock = _Util.connect()
+    sock = MUtil.connect()
     try:
         dataDir = json.loads(sys.argv[1])["data-directory"]
         rsyncSource = "rsync://mirrors.tuna.tsinghua.edu.cn/gentoo"
@@ -27,43 +27,41 @@ def main():
         print("Start fetching file list.")
         fileList = _makeDirAndGetFileList(rsyncSource, dataDir)
         print("File list fetched, total %d files." % (len(fileList)))
-        _Util.progress_changed(sock, PROGRESS_STAGE_1)
+        MUtil.progress_changed(sock, PROGRESS_STAGE_1)
 
         # stage2: download file list
         i = 1
         total = len(fileList)
-        for fn in _Util.randomSorted(fileList):
+        for fn in Util.randomSorted(fileList):
             fullfn = os.path.join(dataDir, fn)
             if not os.path.exists(fullfn):
                 print("Download file \"%s\"." % (fn))
                 tmpfn = fullfn + ".tmp"
                 url = os.path.join(fileSource, fn)
-                rc, out = _Util.shellCallWithRetCode("/usr/bin/wget -O \"%s\" %s" % (tmpfn, url))
+                rc, out = Util.shellCallWithRetCode("/usr/bin/wget -O \"%s\" %s" % (tmpfn, url))
                 if rc != 0 and rc != 8:
                     # ignore "file not found" error (8) since rsyncSource/fileSource may be different servers
                     raise Exception("download %s failed" % (url))
                 os.rename(tmpfn, fullfn)
             else:
                 print("File \"%s\" exists." % (fn))
-            _Util.progress_changed(sock, PROGRESS_STAGE_1 + PROGRESS_STAGE_2 * i // total)
-        _Util.progress_changed(sock, PROGRESS_STAGE_1 + PROGRESS_STAGE_2)
+            MUtil.progress_changed(sock, PROGRESS_STAGE_1 + PROGRESS_STAGE_2 * i // total)
+        MUtil.progress_changed(sock, PROGRESS_STAGE_1 + PROGRESS_STAGE_2)
 
         # stage3: rsync
-        print("Start rsync.")
-        _Util.shellCall("/usr/bin/rsync -a -z --no-motd --delete %s %s" % (rsyncSource, dataDir))
-        print("Rsync over.")
+        Util.cmdExec("/usr/bin/rsync", "-a", "-z", "--delete", rsyncSource, dataDir)
 
         # report full progress
-        _Util.progress_changed(sock, 100)
+        MUtil.progress_changed(sock, 100)
     except Exception:
-        _Util.error_occured(sock, sys.exc_info())
+        MUtil.error_occured(sock, sys.exc_info())
         raise
     finally:
         sock.close()
 
 
 def _makeDirAndGetFileList(rsyncSource, dataDir):
-    out = _Util.shellCall("/usr/bin/rsync -a --no-motd --list-only %s 2>&1" % (rsyncSource))
+    out = Util.shellCall("/usr/bin/rsync -a --no-motd --list-only %s 2>&1" % (rsyncSource))
 
     ret = []
     for line in out.split("\n"):
@@ -78,14 +76,14 @@ def _makeDirAndGetFileList(rsyncSource, dataDir):
             continue
 
         if modstr.startswith("d"):
-            _Util.ensureDir(os.path.join(dataDir, filename))
+            Util.ensureDir(os.path.join(dataDir, filename))
         else:
             ret.append(filename)
 
     return ret
 
 
-class _Util:
+class MUtil:
 
     @staticmethod
     def connect():
@@ -106,12 +104,15 @@ class _Util:
     @staticmethod
     def error_occured(sock, exc_info):
         sock.send(json.dumps({
-            "message": "error",
+            "message": "error_occured",
             "data": {
                 "exc_info": "abc",
             },
         }).encode("utf-8"))
         sock.send(b'\n')
+
+
+class Util:
 
     @staticmethod
     def randomSorted(tlist):
@@ -121,6 +122,28 @@ class _Util:
     def ensureDir(dirname):
         if not os.path.exists(dirname):
             os.makedirs(dirname)
+
+    @staticmethod
+    def cmdExec(cmd, *kargs):
+        # call command to execute frontend job
+        #
+        # scenario 1, process group receives SIGTERM, SIGINT and SIGHUP:
+        #   * callee must auto-terminate, and cause no side-effect
+        #   * caller must be terminate AFTER child-process, and do neccessary finalization
+        #   * termination information should be printed by callee, not caller
+        # scenario 2, caller receives SIGTERM, SIGINT, SIGHUP:
+        #   * caller should terminate callee, wait callee to stop, do neccessary finalization, print termination information, and be terminated by signal
+        #   * callee does not need to treat this scenario specially
+        # scenario 3, callee receives SIGTERM, SIGINT, SIGHUP:
+        #   * caller detects child-process failure and do appopriate treatment
+        #   * callee should print termination information
+
+        # FIXME, the above condition is not met, FmUtil.shellExec has the same problem
+
+        ret = subprocess.run([cmd] + list(kargs), universal_newlines=True)
+        if ret.returncode > 128:
+            time.sleep(1.0)
+        ret.check_returncode()
 
     @staticmethod
     def shellCall(cmd):
