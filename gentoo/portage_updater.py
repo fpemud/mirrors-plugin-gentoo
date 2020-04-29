@@ -10,7 +10,7 @@ import subprocess
 def main():
     dataDir = json.loads(sys.argv[1])["data-directory"]
     rsyncSource = "rsync://mirrors.tuna.tsinghua.edu.cn/gentoo-portage"
-    _Util.cmdExec("/usr/bin/rsync", "-a", "-z", "--delete", rsyncSource, dataDir)
+    _Util.cmdExec("/usr/bin/rsync", "-v", "-a", "-z", "--delete", rsyncSource, dataDir)
 
 
 class _Util:
