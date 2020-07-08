@@ -2,8 +2,8 @@
 <plugin id="gentoo">
   <file-mirror id="gentoo">
     <name>Gentoo Source Mirror</name>
+    <storage>file</storage>
     <estimated-size>550GiB</estimated-size>
-    <data-directory>gentoo</data-directory>
     <initializer>
       <executable>gentoo_initializer.py</executable>
     </initializer>
@@ -18,8 +18,8 @@
   </file-mirror>
   <file-mirror id="gentoo-portage">
     <name>Gentoo Portage</name>
+    <storage>file</storage>
     <estimated-size>700MiB</estimated-size>
-    <data-directory>gentoo-portage</data-directory>
     <initializer>
       <executable>portage_updater.py</executable>
     </initializer>
