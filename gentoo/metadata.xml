@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <plugin id="gentoo">
-  <file-mirror id="gentoo">
+  <mirror-site id="gentoo">
     <name>Gentoo Source Mirror</name>
     <storage>file</storage>
     <estimated-size>550GiB</estimated-size>
@@ -15,8 +15,8 @@
       <protocol>http</protocol>
       <protocol>ftp</protocol>
     </advertiser>
-  </file-mirror>
-  <file-mirror id="gentoo-portage">
+  </mirror-site>
+  <mirror-site id="gentoo-portage">
     <name>Gentoo Portage</name>
     <storage>file</storage>
     <estimated-size>700MiB</estimated-size>
@@ -30,5 +30,5 @@
     <advertiser>
       <protocol>rsync</protocol>
     </advertiser>
-  </file-mirror>
+  </mirror-site>
 </plugin>
