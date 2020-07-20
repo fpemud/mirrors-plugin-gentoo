@@ -19,7 +19,7 @@ PROGRESS_STAGE_3 = 20
 def main():
     sock = MUtil.connect()
     try:
-        dataDir = json.loads(sys.argv[1])["data-directory"]
+        dataDir = json.loads(sys.argv[1])["storage-file"]["data-directory"]
         rsyncSource = "rsync://mirrors.tuna.tsinghua.edu.cn/gentoo"
         fileSource = "https://mirrors.tuna.tsinghua.edu.cn/gentoo"
 

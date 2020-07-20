@@ -3,7 +3,10 @@
   <mirror-site id="gentoo">
     <name>Gentoo Source Mirror</name>
     <storage>file</storage>
-    <estimated-size>550GiB</estimated-size>
+    <advertiser>
+      <interface>file:http</interface>
+      <interface>file:ftp</interface>
+    </advertiser>
     <initializer>
       <executable>gentoo_initializer.py</executable>
     </initializer>
@@ -11,15 +14,13 @@
       <executable>gentoo_updater.py</executable>
       <cron-expression>0 */4 * * *</cron-expression>
     </updater>
-    <advertiser>
-      <protocol>http</protocol>
-      <protocol>ftp</protocol>
-    </advertiser>
   </mirror-site>
   <mirror-site id="gentoo-portage">
     <name>Gentoo Portage</name>
     <storage>file</storage>
-    <estimated-size>700MiB</estimated-size>
+    <advertiser>
+      <interface>file:rsync</interface>
+    </advertiser>
     <initializer>
       <executable>portage_updater.py</executable>
     </initializer>
@@ -27,8 +28,5 @@
       <executable>portage_updater.py</executable>
       <cron-expression>0 */4 * * *</cron-expression>
     </updater>
-    <advertiser>
-      <protocol>rsync</protocol>
-    </advertiser>
   </mirror-site>
 </plugin>
