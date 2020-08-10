@@ -9,6 +9,7 @@ import json
 import random
 import socket
 import subprocess
+import mirrors.plugin
 
 
 PROGRESS_STAGE_1 = 10
@@ -17,8 +18,7 @@ PROGRESS_STAGE_3 = 20
 
 
 def main():
-    sock = MUtil.connect()
-    try:
+    with mirrors.plugin.ApiClient() as sock:
         dataDir = json.loads(sys.argv[1])["storage-file"]["data-directory"]
         rsyncSource = "rsync://mirrors.tuna.tsinghua.edu.cn/gentoo"
         fileSource = "https://mirrors.tuna.tsinghua.edu.cn/gentoo"
@@ -27,7 +27,7 @@ def main():
         print("Start fetching file list.")
         fileList = _makeDirAndGetFileList(rsyncSource, dataDir)
         print("File list fetched, total %d files." % (len(fileList)))
-        MUtil.progress_changed(sock, PROGRESS_STAGE_1)
+        sock.progress_changed(PROGRESS_STAGE_1)
 
         # stage2: download file list
         i = 1
@@ -45,16 +45,14 @@ def main():
                 os.rename(tmpfn, fullfn)
             else:
                 print("File \"%s\" exists." % (fn))
-            MUtil.progress_changed(sock, PROGRESS_STAGE_1 + PROGRESS_STAGE_2 * i // total)
-        MUtil.progress_changed(sock, PROGRESS_STAGE_1 + PROGRESS_STAGE_2)
+            sock.progress_changed(PROGRESS_STAGE_1 + PROGRESS_STAGE_2 * i // total)
+        sock.progress_changed(PROGRESS_STAGE_1 + PROGRESS_STAGE_2)
 
         # stage3: rsync
         Util.cmdExec("/usr/bin/rsync", "-a", "-z", "--delete", rsyncSource, dataDir)
 
         # report full progress
-        MUtil.progress_changed(sock, 100)
-    finally:
-        sock.close()
+        sock.progress_changed(100)
 
 
 def _makeDirAndGetFileList(rsyncSource, dataDir):
@@ -78,25 +76,6 @@ def _makeDirAndGetFileList(rsyncSource, dataDir):
             ret.append(filename)
 
     return ret
-
-
-class MUtil:
-
-    @staticmethod
-    def connect():
-        sock = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
-        sock.connect("/run/mirrors/api.socket")
-        return sock
-
-    @staticmethod
-    def progress_changed(sock, progress):
-        sock.send(json.dumps({
-            "message": "progress",
-            "data": {
-                "progress": progress,
-            },
-        }).encode("utf-8"))
-        sock.send(b'\n')
 
 
 class Util:
