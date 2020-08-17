@@ -2,7 +2,7 @@
 <plugin id="gentoo">
   <mirror-site id="gentoo">
     <name>Gentoo Source Mirror</name>
-    <storage>file</storage>
+    <storage type="file"></storage>
     <advertiser>
       <interface>file:http</interface>
       <interface>file:ftp</interface>
@@ -17,7 +17,7 @@
   </mirror-site>
   <mirror-site id="gentoo-portage">
     <name>Gentoo Portage</name>
-    <storage>file</storage>
+    <storage type="file"></storage>
     <advertiser>
       <interface>file:rsync</interface>
     </advertiser>
