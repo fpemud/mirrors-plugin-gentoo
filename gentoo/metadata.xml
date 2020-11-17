@@ -2,7 +2,7 @@
 <plugin id="gentoo">
   <mirror-site id="gentoo">
     <name>Gentoo Source Mirror</name>
-    <storage>file</storage>
+    <storage type="file"></storage>
     <advertiser>
       <interface>file:http</interface>
       <interface>file:ftp</interface>
@@ -12,12 +12,12 @@
     </initializer>
     <updater>
       <executable>gentoo_updater.py</executable>
-      <cron-expression>0 */4 * * *</cron-expression>
+      <schedule type="interval">4h</schedule>
     </updater>
   </mirror-site>
   <mirror-site id="gentoo-portage">
     <name>Gentoo Portage</name>
-    <storage>file</storage>
+    <storage type="file"></storage>
     <advertiser>
       <interface>file:rsync</interface>
     </advertiser>
@@ -26,7 +26,7 @@
     </initializer>
     <updater>
       <executable>portage_updater.py</executable>
-      <cron-expression>0 */4 * * *</cron-expression>
+      <schedule type="interval">4h</schedule>
     </updater>
   </mirror-site>
 </plugin>
