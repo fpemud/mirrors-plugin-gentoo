@@ -12,7 +12,7 @@
     </initializer>
     <updater>
       <executable>gentoo_updater.py</executable>
-      <cron-expression>0 */4 * * *</cron-expression>
+      <schedule type="interval">4h</schedule>
     </updater>
   </mirror-site>
   <mirror-site id="gentoo-portage">
@@ -26,7 +26,7 @@
     </initializer>
     <updater>
       <executable>portage_updater.py</executable>
-      <cron-expression>0 */4 * * *</cron-expression>
+      <schedule type="interval">4h</schedule>
     </updater>
   </mirror-site>
 </plugin>
