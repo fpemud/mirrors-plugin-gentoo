@@ -2,11 +2,10 @@
 <plugin id="gentoo">
   <mirror-site id="gentoo">
     <name>Gentoo Source Mirror</name>
-    <storage type="file"></storage>
-    <advertiser>
-      <interface>file:http</interface>
-      <interface>file:ftp</interface>
-    </advertiser>
+    <storage type="file"/>
+    <advertiser type="httpdir"/>
+    <advertiser type="ftp"/>
+    <advertiser type="rsync"/>
     <initializer>
       <executable>gentoo_initializer.py</executable>
     </initializer>
@@ -17,10 +16,8 @@
   </mirror-site>
   <mirror-site id="gentoo-portage">
     <name>Gentoo Portage</name>
-    <storage type="file"></storage>
-    <advertiser>
-      <interface>file:rsync</interface>
-    </advertiser>
+    <storage type="file"/>
+    <advertiser type="rsync"/>
     <initializer>
       <executable>portage_updater.py</executable>
     </initializer>
