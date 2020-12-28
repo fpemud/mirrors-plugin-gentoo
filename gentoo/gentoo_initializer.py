@@ -3,11 +3,8 @@
 
 import os
 import re
-import sys
 import time
-import json
 import random
-import socket
 import subprocess
 import mirrors.plugin
 
@@ -19,7 +16,7 @@ PROGRESS_STAGE_3 = 20
 
 def main():
     with mirrors.plugin.ApiClient() as sock:
-        dataDir = json.loads(sys.argv[1])["storage-file"]["data-directory"]
+        dataDir = mirrors.plugin.params["storage-file"]["data-directory"]
         rsyncSource = "rsync://mirrors.tuna.tsinghua.edu.cn/gentoo"
         fileSource = "https://mirrors.tuna.tsinghua.edu.cn/gentoo"
 

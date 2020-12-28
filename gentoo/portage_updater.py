@@ -1,14 +1,13 @@
 #!/usr/bin/python3
 # -*- coding: utf-8; tab-width: 4; indent-tabs-mode: t -*-
 
-import sys
 import time
-import json
 import subprocess
+import mirrors.plugin
 
 
 def main():
-    dataDir = json.loads(sys.argv[1])["storage-file"]["data-directory"]
+    dataDir = mirrors.plugin.params["storage-file"]["data-directory"]
     rsyncSource = "rsync://mirrors.tuna.tsinghua.edu.cn/gentoo-portage"
     _Util.cmdExec("/usr/bin/rsync", "-v", "-a", "-z", "--delete", rsyncSource, dataDir)
 
